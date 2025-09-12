@@ -1,17 +1,14 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.Image;
 import java.awt.Point;
-
+import java.awt.Rectangle;
+import java.io.File;
+import java.util.Random;
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-
-import java.io.File;
-import javax.imageio.ImageIO;
-
-import java.util.Random;
 
 /**
  * A Game board on which to place and move players.
@@ -23,8 +20,8 @@ public class GameGUI extends JComponent
 {
   static final long serialVersionUID = 141L; // problem 1.4.1
 
-  private static final int WIDTH = 510;
-  private static final int HEIGHT = 360;
+  private static final int BOARD_WIDTH = 510;
+  private static final int BOARD_HEIGHT = 360;
   private static final int SPACE_SIZE = 60;
   private static final int GRID_W = 8;
   private static final int GRID_H = 5;
@@ -40,7 +37,7 @@ public class GameGUI extends JComponent
 
   // player image and info
   private Image player;
-  private Point playerLoc;
+  private final Point playerLoc = new Point(START_LOC_X, START_LOC_Y);
   private int playerSteps;
 
   // walls, prizes, traps
@@ -60,7 +57,7 @@ public class GameGUI extends JComponent
   private int hitWallVal = 5;  // penalty only
 
   // game frame
-  private JFrame frame;
+  private final JFrame frame;
 
   /**
    * Constructor for the GameGUI class.
@@ -71,37 +68,45 @@ public class GameGUI extends JComponent
     
     try {
       bgImage = ImageIO.read(new File("grid.png"));      
-    } catch (Exception e) {
+    } catch (java.io.IOException | NullPointerException e) {
       System.err.println("Could not open file grid.png");
     }      
     try {
       prizeImage = ImageIO.read(new File("coin.png"));      
-    } catch (Exception e) {
+    } catch (java.io.IOException | NullPointerException e) {
       System.err.println("Could not open file coin.png");
     }
   
     // player image, student can customize this image by changing file on disk
-    try {
-      player = ImageIO.read(new File("player.png"));      
-    } catch (Exception e) {
-     System.err.println("Could not open file player.png");
-    }
-    // save player location
-    playerLoc = new Point(x,y);
-
+  try {
     // create the game frame
     frame = new JFrame();
     frame.setTitle("EscapeRoom");
-    frame.setSize(WIDTH, HEIGHT);
+    frame.setSize(BOARD_WIDTH, BOARD_HEIGHT);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.add(this);
+    // frame.add(this); // Moved to initializeGUI()
     frame.setVisible(true);
     frame.setResizable(false); 
+    // frame.add(this); // Moved to initializeGUI()
 
     // set default config
     totalWalls = 20;
     totalPrizes = 3;
     totalTraps = 5;
+  } catch (IllegalArgumentException e) {
+    throw new RuntimeException("Error initializing game frame: IllegalArgumentException", e);
+  } catch (NullPointerException e) {
+    throw new RuntimeException("Error initializing game frame: NullPointerException", e);
+  } catch (SecurityException e) {
+    throw new RuntimeException("Error initializing game frame: SecurityException", e);
+  }
+  }
+
+  /**
+   * Call this method after constructing GameGUI to finish GUI initialization.
+   */
+  public void initializeGUI() {
+    frame.add(this);
   }
 
  /**
@@ -141,7 +146,7 @@ public class GameGUI extends JComponent
       playerSteps++;
 
       // check if off grid horizontally and vertically
-      if ( (newX < 0 || newX > WIDTH-SPACE_SIZE) || (newY < 0 || newY > HEIGHT-SPACE_SIZE) )
+      if ( (newX < 0 || newX > BOARD_WIDTH-SPACE_SIZE) || (newY < 0 || newY > BOARD_HEIGHT-SPACE_SIZE) )
       {
         System.out.println ("OFF THE GRID!");
         return -offGridVal;
@@ -374,6 +379,7 @@ public class GameGUI extends JComponent
   /** 
    * For internal use and should not be called directly: Users graphics buffer to paint board elements.
    */
+  @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
     Graphics2D g2 = (Graphics2D)g;
@@ -489,7 +495,7 @@ public class GameGUI extends JComponent
     int score;
 
     double px = playerLoc.getX();
-    if (px > (WIDTH - 2*SPACE_SIZE))
+    if (px > (BOARD_WIDTH - 2*SPACE_SIZE))
     {
       System.out.println("YOU MADE IT!");
       score = endVal;
