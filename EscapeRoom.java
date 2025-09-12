@@ -69,6 +69,7 @@ public class EscapeRoom
 
     System.out.println("score=" + score);
     System.out.println("steps=" + game.getSteps());
+    System.out.println("test");
   }
 }
 
