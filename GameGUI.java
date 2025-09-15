@@ -4,6 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.Random;
 import javax.imageio.ImageIO;
@@ -16,7 +18,7 @@ import javax.swing.JFrame;
  * @author PLTW
  * @version 1.0
  */
-public class GameGUI extends JComponent
+public class GameGUI extends JComponent implements KeyListener
 {
   static final long serialVersionUID = 141L; // problem 1.4.1
 
@@ -57,7 +59,7 @@ public class GameGUI extends JComponent
   private int hitWallVal = 5;  // penalty only
 
   // game frame
-  private final JFrame frame;
+  private JFrame frame;
 
   /**
    * Constructor for the GameGUI class.
@@ -65,7 +67,6 @@ public class GameGUI extends JComponent
    */
   public GameGUI()
   {
-    
     try {
       bgImage = ImageIO.read(new File("grid.png"));      
     } catch (java.io.IOException | NullPointerException e) {
@@ -76,30 +77,26 @@ public class GameGUI extends JComponent
     } catch (java.io.IOException | NullPointerException e) {
       System.err.println("Could not open file coin.png");
     }
-  
-    // player image, student can customize this image by changing file on disk
-  try {
-    // create the game frame
+    try {
+      player = ImageIO.read(new File("player.png"));
+    } catch (java.io.IOException | NullPointerException e) {
+      System.err.println("Could not open file player.png");
+    }
     frame = new JFrame();
     frame.setTitle("EscapeRoom");
     frame.setSize(BOARD_WIDTH, BOARD_HEIGHT);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    // frame.add(this); // Moved to initializeGUI()
-    frame.setVisible(true);
+    frame.add(this);
     frame.setResizable(false); 
-    // frame.add(this); // Moved to initializeGUI()
-
+    frame.setVisible(true);
     // set default config
     totalWalls = 20;
     totalPrizes = 3;
     totalTraps = 5;
-  } catch (IllegalArgumentException e) {
-    throw new RuntimeException("Error initializing game frame: IllegalArgumentException", e);
-  } catch (NullPointerException e) {
-    throw new RuntimeException("Error initializing game frame: NullPointerException", e);
-  } catch (SecurityException e) {
-    throw new RuntimeException("Error initializing game frame: SecurityException", e);
-  }
+    // Add key listener and focus
+    setFocusable(true);
+    addKeyListener(this);
+    requestFocusInWindow();
   }
 
   /**
@@ -464,25 +461,29 @@ public class GameGUI extends JComponent
   private void createWalls()
   {
      int s = SPACE_SIZE; 
-
      Random rand = new Random();
-     for (int numWalls = 0; numWalls < totalWalls; numWalls++)
-     {
+     int numWalls = 0;
+     while (numWalls < totalWalls) {
       int h = rand.nextInt(GRID_H);
       int w = rand.nextInt(GRID_W);
-
       Rectangle r;
-       if (rand.nextInt(2) == 0) 
-       {
-         // vertical wall
-         r = new Rectangle((w*s + s - 5),h*s, 8,s);
-       }
-       else
-       {
-         /// horizontal
-         r = new Rectangle(w*s,(h*s + s - 5), s, 8);
-       }
-       walls[numWalls] = r;
+      if (rand.nextInt(2) == 0) 
+      {
+        // vertical wall
+        r = new Rectangle((w*s + s - 5),h*s, 8,s);
+      }
+      else
+      {
+        // horizontal
+        r = new Rectangle(w*s,(h*s + s - 5), s, 8);
+      }
+      // Check if wall overlaps player's initial position
+      Rectangle playerStart = new Rectangle(START_LOC_X, START_LOC_Y, 40, 40);
+      if (!r.intersects(playerStart)) {
+        walls[numWalls] = r;
+        numWalls++;
+      }
+      // else skip this wall and try again
      }
   }
 
@@ -508,4 +509,25 @@ public class GameGUI extends JComponent
     return score;
   
   }
+
+  // KeyListener methods for WASD movement
+  @Override
+  public void keyPressed(KeyEvent e) {
+    int key = e.getKeyCode();
+    if (key == KeyEvent.VK_W) {
+      movePlayer(0, -SPACE_SIZE);
+    } else if (key == KeyEvent.VK_A) {
+      movePlayer(-SPACE_SIZE, 0);
+    } else if (key == KeyEvent.VK_S) {
+      movePlayer(0, SPACE_SIZE);
+    } else if (key == KeyEvent.VK_D) {
+      movePlayer(SPACE_SIZE, 0);
+    }
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e) {}
+
+  @Override
+  public void keyTyped(KeyEvent e) {}
 }
