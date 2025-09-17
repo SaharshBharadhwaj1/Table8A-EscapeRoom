@@ -5,7 +5,6 @@
 * 10/10/2019
 * Copyright(c) 2019 PLTW to present. All rights reserved
 */
-import java.util.Scanner;
 
 /**
  * Create an escape room game where the player must navigate
@@ -45,7 +44,6 @@ public class EscapeRoom
     
     int score = 0;
 
-    Scanner in = new Scanner(System.in);
     String[] validCommands = { "right", "left", "up", "down", "r", "l", "u", "d",
     "jump", "jr", "jumpleft", "jl", "jumpup", "ju", "jumpdown", "jd",
     "pickup", "p", "quit", "q", "replay", "help", "?"};
@@ -59,17 +57,35 @@ public class EscapeRoom
       System.out.print("Enter command:");
       String input = UserInput.getValidInput(validCommands);
 
-	    /* process user commands*/
-    
-      /* uncomment when user quits */
-      // play = false;
+      /* process user commands*/
+      switch (input) {
+        case "right", "r" -> px += m;
+        case "left", "l" -> px -= m;
+        case "up", "u" -> py -= m;
+        case "down", "d" -> py += m;
+        case "quit", "q" -> play = false;
+        // Add other command processing as needed
+        default -> {
+          // Handle other commands or invalid input
+        }
+      }
+
+      // Check if player is on a coin and collect it
+      int prize = game.pickupPrize();
+      if (prize > 0) {
+        score += prize;
+        System.out.println("You collected a coin! Score: " + score);
+      }
+
+      System.out.println("Player position: (" + px + ", " + py + ")");
+      System.out.println("Score: " + score); // Always show current score
     }
 
     score += game.endGame();
 
     System.out.println("score=" + score);
     System.out.println("steps=" + game.getSteps());
+    System.out.println("test");
   }
 }
 
-        

@@ -1,17 +1,16 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.Image;
 import java.awt.Point;
-
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.File;
+import java.util.Random;
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-
-import java.io.File;
-import javax.imageio.ImageIO;
-
-import java.util.Random;
 
 /**
  * A Game board on which to place and move players.
@@ -19,12 +18,12 @@ import java.util.Random;
  * @author PLTW
  * @version 1.0
  */
-public class GameGUI extends JComponent
+public class GameGUI extends JComponent implements KeyListener
 {
   static final long serialVersionUID = 141L; // problem 1.4.1
 
-  private static final int WIDTH = 510;
-  private static final int HEIGHT = 360;
+  private static final int BOARD_WIDTH = 510;
+  private static final int BOARD_HEIGHT = 360;
   private static final int SPACE_SIZE = 60;
   private static final int GRID_W = 8;
   private static final int GRID_H = 5;
@@ -40,7 +39,7 @@ public class GameGUI extends JComponent
 
   // player image and info
   private Image player;
-  private Point playerLoc;
+  private final Point playerLoc = new Point(START_LOC_X, START_LOC_Y);
   private int playerSteps;
 
   // walls, prizes, traps
@@ -68,40 +67,43 @@ public class GameGUI extends JComponent
    */
   public GameGUI()
   {
-    
     try {
       bgImage = ImageIO.read(new File("grid.png"));      
-    } catch (Exception e) {
+    } catch (java.io.IOException | NullPointerException e) {
       System.err.println("Could not open file grid.png");
     }      
     try {
       prizeImage = ImageIO.read(new File("coin.png"));      
-    } catch (Exception e) {
+    } catch (java.io.IOException | NullPointerException e) {
       System.err.println("Could not open file coin.png");
     }
-  
-    // player image, student can customize this image by changing file on disk
     try {
-      player = ImageIO.read(new File("player.png"));      
-    } catch (Exception e) {
-     System.err.println("Could not open file player.png");
+      player = ImageIO.read(new File("player.png"));
+    } catch (java.io.IOException | NullPointerException e) {
+      System.err.println("Could not open file player.png");
     }
-    // save player location
-    playerLoc = new Point(x,y);
-
-    // create the game frame
     frame = new JFrame();
     frame.setTitle("EscapeRoom");
-    frame.setSize(WIDTH, HEIGHT);
+    frame.setSize(BOARD_WIDTH, BOARD_HEIGHT);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.add(this);
-    frame.setVisible(true);
     frame.setResizable(false); 
-
+    frame.setVisible(true);
     // set default config
     totalWalls = 20;
     totalPrizes = 3;
     totalTraps = 5;
+    // Add key listener and focus
+    setFocusable(true);
+    addKeyListener(this);
+    requestFocusInWindow();
+  }
+
+  /**
+   * Call this method after constructing GameGUI to finish GUI initialization.
+   */
+  public void initializeGUI() {
+    frame.add(this);
   }
 
  /**
@@ -141,7 +143,7 @@ public class GameGUI extends JComponent
       playerSteps++;
 
       // check if off grid horizontally and vertically
-      if ( (newX < 0 || newX > WIDTH-SPACE_SIZE) || (newY < 0 || newY > HEIGHT-SPACE_SIZE) )
+      if ( (newX < 0 || newX > BOARD_WIDTH-SPACE_SIZE) || (newY < 0 || newY > BOARD_HEIGHT-SPACE_SIZE) )
       {
         System.out.println ("OFF THE GRID!");
         return -offGridVal;
@@ -374,6 +376,7 @@ public class GameGUI extends JComponent
   /** 
    * For internal use and should not be called directly: Users graphics buffer to paint board elements.
    */
+  @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
     Graphics2D g2 = (Graphics2D)g;
@@ -458,25 +461,29 @@ public class GameGUI extends JComponent
   private void createWalls()
   {
      int s = SPACE_SIZE; 
-
      Random rand = new Random();
-     for (int numWalls = 0; numWalls < totalWalls; numWalls++)
-     {
+     int numWalls = 0;
+     while (numWalls < totalWalls) {
       int h = rand.nextInt(GRID_H);
       int w = rand.nextInt(GRID_W);
-
       Rectangle r;
-       if (rand.nextInt(2) == 0) 
-       {
-         // vertical wall
-         r = new Rectangle((w*s + s - 5),h*s, 8,s);
-       }
-       else
-       {
-         /// horizontal
-         r = new Rectangle(w*s,(h*s + s - 5), s, 8);
-       }
-       walls[numWalls] = r;
+      if (rand.nextInt(2) == 0) 
+      {
+        // vertical wall
+        r = new Rectangle((w*s + s - 5),h*s, 8,s);
+      }
+      else
+      {
+        // horizontal
+        r = new Rectangle(w*s,(h*s + s - 5), s, 8);
+      }
+      // Check if wall overlaps player's initial position
+      Rectangle playerStart = new Rectangle(START_LOC_X, START_LOC_Y, 40, 40);
+      if (!r.intersects(playerStart)) {
+        walls[numWalls] = r;
+        numWalls++;
+      }
+      // else skip this wall and try again
      }
   }
 
@@ -489,7 +496,7 @@ public class GameGUI extends JComponent
     int score;
 
     double px = playerLoc.getX();
-    if (px > (WIDTH - 2*SPACE_SIZE))
+    if (px > (BOARD_WIDTH - 2*SPACE_SIZE))
     {
       System.out.println("YOU MADE IT!");
       score = endVal;
@@ -502,4 +509,25 @@ public class GameGUI extends JComponent
     return score;
   
   }
+
+  // KeyListener methods for WASD movement
+  @Override
+  public void keyPressed(KeyEvent e) {
+    int key = e.getKeyCode();
+    switch (key) {
+      case KeyEvent.VK_W -> movePlayer(0, -SPACE_SIZE);
+      case KeyEvent.VK_A -> movePlayer(-SPACE_SIZE, 0);
+      case KeyEvent.VK_S -> movePlayer(0, SPACE_SIZE);
+      case KeyEvent.VK_D -> movePlayer(SPACE_SIZE, 0);
+      default -> {
+        // Do nothing for other keys
+      }
+    }
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e) {}
+
+  @Override
+  public void keyTyped(KeyEvent e) {}
 }
