@@ -61,7 +61,7 @@ public class GameGUI extends JComponent implements KeyListener
   private int hitWallVal = 5;  // penalty only
 
   // game frame
-  private JFrame frame;
+  private final JFrame frame;
 
   /**
    * Constructor for the GameGUI class.
@@ -142,7 +142,7 @@ public class GameGUI extends JComponent implements KeyListener
     walls = new Rectangle[totalWalls];
     createWalls();
   }
-
+    int m = 60;
   /**
    * Increment/decrement the player location by the amount designated.
    * This method checks for bumping into walls and going off the grid,
@@ -302,8 +302,11 @@ public class GameGUI extends JComponent implements KeyListener
         repaint();
         return prizeVal;
       }
+      else {
+        System.out.println("NO PRIZE HERE");
+      }
     }
-    System.out.println("OOPS, NO PRIZE HERE");
+ 
     return -prizeVal;  
   }
 
@@ -553,4 +556,21 @@ public class GameGUI extends JComponent implements KeyListener
 
   @Override
   public void keyTyped(KeyEvent e) {}
+
+  public boolean hasActiveTrap(int x, int y) {
+    for (Rectangle trap : traps) {
+        if (trap.getWidth() > 0 && trap.getHeight() > 0) { // not sprung
+            if (trap.contains(x, y)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+public void printTraps() {
+    for (Rectangle trap : traps) {
+        System.out.println("Trap at: (" + trap.getX() + ", " + trap.getY() + ")");
+    }
+}
 }

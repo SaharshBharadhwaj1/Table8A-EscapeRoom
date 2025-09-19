@@ -46,7 +46,7 @@ public class EscapeRoom
 
     String[] validCommands = { "right", "left", "up", "down", "r", "l", "u", "d",
     "jump", "jr", "jumpleft", "jl", "jumpup", "ju", "jumpdown", "jd",
-    "pickup", "p", "quit", "q", "replay", "help", "?"};
+    "pickup", "p", "springtrap", "st", "quit", "q", "replay", "help", "?"};
   
     // set up game
     boolean play = true;
@@ -59,10 +59,54 @@ public class EscapeRoom
 
       /* process user commands*/
       switch (input) {
-        case "right", "d" -> px += m;
-        case "left", "a" -> px -= m;
-        case "up", "w" -> py -= m;
-        case "down", "s" -> py += m;
+        case "right", "r", "d"  -> {
+            if (game.hasActiveTrap(game.x, game.y)) {
+                System.out.println("You got caught! Spring the Trap and move on. -10 points.");
+                score -= 10;
+            } else {
+                game.movePlayer(m, 0); 
+            }
+        }
+        case "left", "l", "a" -> {
+            if (game.hasActiveTrap(game.x, game.y)) {
+                System.out.println("You got caught! Spring the Trap and move on. -10 points.");
+                score -= 10;
+            } else {
+                game.movePlayer(-m, 0); 
+            }
+        }
+        case "up", "u", "w" -> {
+            if (game.hasActiveTrap(game.x, game.y)) {
+                System.out.println("You got caught! Spring the Trap and move on. -10 points.");
+                score -= 10;
+            } else {
+                game.movePlayer(0, -m); 
+            }
+        }
+        case "down", "s" -> {
+            if (game.hasActiveTrap(game.x, game.y)) {
+                System.out.println("You got caught! Spring the Trap and move on. -10 points.");
+                score -= 10;
+            } else {
+                game.movePlayer(0, m); 
+            }
+        }
+        case "springtrap", "st" -> {
+          int trapScore = game.springTrap(px, py);
+          if (trapScore > 0) {
+            System.out.println("TRAP IS SPRUNG! Score: +" + trapScore);
+          } else {
+            System.out.println("THERE IS NO TRAP HERE TO SPRING. Penalty: " + trapScore);
+          }
+          score += trapScore;
+        }
+        case "help", "?" -> {
+          System.out.println("Valid commands:");
+          for (String cmd : validCommands) {
+            System.out.print(cmd + " ");
+          }
+          System.out.println("\nType one of these commands to play.");
+        }
         case "quit", "q" -> play = false;
         // Add other command processing as needed
         default -> {
@@ -70,19 +114,27 @@ public class EscapeRoom
         }
       }
 
-      // Example usage of px and py to avoid "never read" error
-      System.out.println("Player position: (" + px + ", " + py + ")");
+      // Check if player is on a coin and collect it
+      int prize = game.pickupPrize();
+      if (prize > 0) {
+        score += prize;
+        System.out.println("You collected a coin! Score: " + score);
+      }
 
-      /* uncomment when user quits */
-      // play = false;
+      System.out.println("Player position: (" + px + ", " + py + ")");
+      System.out.println("Score: " + score); // Always show current score
     }
 
     score += game.endGame();
-
+    System.out.println("Player position: (" + px + ", " + py + ")");
     System.out.println("score=" + score);
     System.out.println("steps=" + game.getSteps());
-    System.out.println("test");
+
+
+    
   }
+  
+
 }
 
-        
+
