@@ -59,10 +59,10 @@ public class EscapeRoom
 
       /* process user commands*/
       switch (input) {
-        case "right", "r" -> px += m;
-        case "left", "l" -> px -= m;
-        case "up", "u" -> py -= m;
-        case "down", "d" -> py += m;
+        case "right", "d" -> px += m;
+        case "left", "a" -> px -= m;
+        case "up", "w" -> py -= m;
+        case "down", "s" -> py += m;
         case "quit", "q" -> play = false;
         // Add other command processing as needed
         default -> {
