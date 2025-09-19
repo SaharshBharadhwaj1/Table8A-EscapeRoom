@@ -9,6 +9,7 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.Random;
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
@@ -84,10 +85,23 @@ public class GameGUI extends JComponent implements KeyListener
     }
     frame = new JFrame();
     frame.setTitle("EscapeRoom");
-    frame.setSize(BOARD_WIDTH, BOARD_HEIGHT);
+    frame.setSize(BOARD_WIDTH, BOARD_HEIGHT + 50);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.add(this);
     frame.setResizable(false); 
+
+    // Use BorderLayout to separate game board and controls
+    frame.setLayout(new java.awt.BorderLayout());
+
+    // Add the game board (this) to the center
+    frame.add(this, java.awt.BorderLayout.CENTER);
+
+    // Create a panel for controls (e.g., Quit button)
+    javax.swing.JPanel controlPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+    JButton quitButton = new JButton("Quit");
+    quitButton.addActionListener(e -> System.exit(0));
+    controlPanel.add(quitButton);
+    frame.add(controlPanel, java.awt.BorderLayout.SOUTH);
+
     frame.setVisible(true);
     // set default config
     totalWalls = 20;
