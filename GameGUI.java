@@ -51,6 +51,7 @@ public class GameGUI extends JComponent implements KeyListener
   private Rectangle[] prizes;
   private int totalTraps;
   private Rectangle[] traps;
+  public Image trapImage;
 
   // scores, sometimes awarded as (negative) penalties
   private int prizeVal = 10;
@@ -83,6 +84,12 @@ public class GameGUI extends JComponent implements KeyListener
     } catch (java.io.IOException | NullPointerException e) {
       System.err.println("Could not open file player.png");
     }
+    try {
+      trapImage = ImageIO.read(new File("trap.png"));
+    }  catch (java.io.IOException | NullPointerException e) {
+      System.err.println("Could not open file trap.png");
+      }
+  
     frame = new JFrame();
     frame.setTitle("EscapeRoom");
     frame.setSize(BOARD_WIDTH, BOARD_HEIGHT + 50);
@@ -97,7 +104,7 @@ public class GameGUI extends JComponent implements KeyListener
 
     // Create a panel for controls (e.g., Quit button)
     javax.swing.JPanel controlPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-    JButton quitButton = new JButton("Quit");
+    JButton quitButton = new JButton("Press Q to Quit");
     quitButton.addActionListener(e -> System.exit(0));
     controlPanel.add(quitButton);
     frame.add(controlPanel, java.awt.BorderLayout.SOUTH);
@@ -529,15 +536,17 @@ public class GameGUI extends JComponent implements KeyListener
   @Override
   public void keyPressed(KeyEvent e) {
     int key = e.getKeyCode();
-    switch (key) {
-      case KeyEvent.VK_W -> movePlayer(0, -SPACE_SIZE);
-      case KeyEvent.VK_A -> movePlayer(-SPACE_SIZE, 0);
-      case KeyEvent.VK_S -> movePlayer(0, SPACE_SIZE);
-      case KeyEvent.VK_D -> movePlayer(SPACE_SIZE, 0);
-      default -> {
-        // Do nothing for other keys
+      switch (key) {
+          case KeyEvent.VK_W -> movePlayer(0, -SPACE_SIZE);
+          case KeyEvent.VK_A -> movePlayer(-SPACE_SIZE, 0);
+          case KeyEvent.VK_S -> movePlayer(0, SPACE_SIZE);
+          case KeyEvent.VK_D -> movePlayer(SPACE_SIZE, 0);
+          case KeyEvent.VK_Q -> System.exit(0);
+          case KeyEvent.VK_P -> pickupPrize();
+         // case KeyEvent.VK_SPACE -> jump();
+          default -> {
+          }
       }
-    }
   }
 
   @Override
