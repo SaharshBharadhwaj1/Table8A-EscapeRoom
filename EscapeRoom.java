@@ -136,12 +136,12 @@ public class EscapeRoom
         System.out.println("You collected a coin! Score: " + score);
       }
 
-      System.out.println("Player position: (" + px + ", " + py + ")");
+      System.out.println("Player position: (" + game.x + ", " + game.y + ")");
       System.out.println("Score: " + score); // Always show current score
     }
 
     score += game.endGame();
-    System.out.println("Player position: (" + px + ", " + py + ")");
+    System.out.println("Player position: (" + game.x + ", " + game.y + ")");
     System.out.println("score=" + score);
     System.out.println("steps=" + game.getSteps());
 
