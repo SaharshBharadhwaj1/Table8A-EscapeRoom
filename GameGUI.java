@@ -135,7 +135,7 @@ public class GameGUI extends JComponent implements KeyListener
     walls = new Rectangle[totalWalls];
     createWalls();
   }
-    int m = 60;
+    
   /**
    * Increment/decrement the player location by the amount designated.
    * This method checks for bumping into walls and going off the grid,
@@ -295,9 +295,7 @@ public class GameGUI extends JComponent implements KeyListener
         repaint();
         return prizeVal;
       }
-      else {
-        System.out.println("NO PRIZE HERE");
-      }
+   
     }
  
     return -prizeVal;  
@@ -561,7 +559,7 @@ public class GameGUI extends JComponent implements KeyListener
 
 public void printTraps() {
     for (Rectangle trap : traps) {
-        System.out.println("Trap at: (" + trap.getX() + ", " + trap.getY() + ")");
+        System.out.println("Trap at: (" + (int)trap.getX() + ", " + (int)trap.getY() + ")");
     }
 }
 }

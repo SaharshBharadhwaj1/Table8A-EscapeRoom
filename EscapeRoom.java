@@ -46,7 +46,7 @@ public class EscapeRoom
 
     String[] validCommands = { "right", "left", "up", "down", "r", "l", "u", "d",
     "jump", "jr", "jumpleft", "jl", "jumpup", "ju", "jumpdown", "jd",
-    "pickup", "p", "springtrap", "st", "quit", "q", "replay", "help", "?"};
+    "pickup", "p", "springtrap", "st", "quit", "q", "replay", "help", "?", "findtrap"};
   
     // set up game
     boolean play = true;
@@ -101,13 +101,28 @@ public class EscapeRoom
           score += trapScore;
         }
         case "help", "?" -> {
-          System.out.println("Valid commands:");
-          for (String cmd : validCommands) {
-            System.out.print(cmd + " ");
-          }
-          System.out.println("\nType one of these commands to play.");
+          System.out.println("\n=== COMMANDS ===");
+          System.out.println("right, r, d   : Move right");
+          System.out.println("left, l, a    : Move left");
+          System.out.println("up, u, w      : Move up");
+          System.out.println("down, s       : Move down");
+          System.out.println("jump, jr      : Jump right");
+          System.out.println("jumpleft, jl  : Jump left");
+          System.out.println("jumpup, ju    : Jump up");
+          System.out.println("jumpdown, jd  : Jump down");
+          System.out.println("pickup, p     : Pick up a prize if present");
+          System.out.println("springtrap, st: Spring a trap if present (for points)");
+          System.out.println("findtrap      : Reveal all trap locations (cheat)");
+          System.out.println("replay        : Reset the board and play again");
+          System.out.println("help, ?       : Show this help menu");
+          System.out.println("quit, q       : Quit the game");
+          System.out.println("\nType one of these commands and press Enter to play.");
         }
         case "quit", "q" -> play = false;
+        case "findtrap" -> {
+          System.out.println("Trap locations:");
+          game.printTraps();
+        }
         // Add other command processing as needed
         default -> {
           // Handle other commands or invalid input
