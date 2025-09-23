@@ -312,7 +312,7 @@ public class GameGUI extends JComponent implements KeyListener {
 
     for (Rectangle p : prizes) {
       if (p.getWidth() > 0 && p.contains(px, py)) {
-        System.out.println("YOU PICKED UP A PRIZE!");
+        System.out.println("YOU PICKED UP A COIN!");
         p.setSize(0, 0);
         repaint();
         return prizeVal;
@@ -398,7 +398,7 @@ public class GameGUI extends JComponent implements KeyListener {
     g.setColor(Color.BLACK);
     g.drawString("Score: " + totalScore, 10, 15);
     if (jumpMode) {
-      g.drawString("JUMP MODE - Select direction with WASD", 10, 30);
+      g.drawString("JUMP MODE ACTIVATED", 10, 30);
     }
   }
 
@@ -453,7 +453,7 @@ public class GameGUI extends JComponent implements KeyListener {
       int finalScore = totalScore + endVal;
       showFinishScreen(finalScore);
     } else {
-      System.out.println("You must be in the bottom right corner to finish!");
+      System.out.println("Must be in the bottom right corner to finish!");
     }
   }
   
@@ -464,7 +464,7 @@ public class GameGUI extends JComponent implements KeyListener {
     finishPanel.setLayout(new java.awt.BorderLayout());
     finishPanel.setBackground(Color.BLACK);
     
-    javax.swing.JLabel titleLabel = new javax.swing.JLabel("GAME FINISHED!", javax.swing.SwingConstants.CENTER);
+    javax.swing.JLabel titleLabel = new javax.swing.JLabel("You Win!", javax.swing.SwingConstants.CENTER);
     titleLabel.setForeground(Color.WHITE);
     titleLabel.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 36));
     
@@ -472,7 +472,7 @@ public class GameGUI extends JComponent implements KeyListener {
     scoreLabel.setForeground(Color.YELLOW);
     scoreLabel.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
     
-    javax.swing.JLabel stepsLabel = new javax.swing.JLabel("Steps taken: " + playerSteps, javax.swing.SwingConstants.CENTER);
+    javax.swing.JLabel stepsLabel = new javax.swing.JLabel("Steps Taken: " + playerSteps, javax.swing.SwingConstants.CENTER);
     stepsLabel.setForeground(Color.WHITE);
     stepsLabel.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 18));
     
@@ -516,7 +516,7 @@ public class GameGUI extends JComponent implements KeyListener {
       score += unspringTrap();
       if (score != 0) {
         totalScore += score;
-        System.out.println("Score change: " + score + " | Total: " + totalScore);
+        System.out.println("Score Change: " + score + " | Total: " + totalScore);
         repaint();
       }
       return;
@@ -557,7 +557,7 @@ public class GameGUI extends JComponent implements KeyListener {
 
     if (score != 0) {
       totalScore += score;
-      System.out.println("Score change: " + score + " | Total: " + totalScore);
+      System.out.println("Score Change: " + score + " | Total: " + totalScore);
       repaint();
     }
 

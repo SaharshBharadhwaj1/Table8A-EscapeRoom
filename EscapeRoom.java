@@ -129,6 +129,11 @@ public class EscapeRoom
         }
       }
 
+      // Example usage of px and py to avoid "never read" error
+      System.out.println("Player Position: (" + px + ", " + py + ")");
+
+      /* uncomment when user quits */
+      // play = false;
       // Check if player is on a coin and collect it
       int prize = game.pickupPrize();
       if (prize > 0) {
@@ -141,6 +146,10 @@ public class EscapeRoom
     }
 
     score += game.endGame();
+
+    System.out.println("Score=" + score);
+    System.out.println("Steps=" + game.getSteps());
+    System.out.println("test");
     System.out.println("Player position: (" + game.x + ", " + game.y + ")");
     System.out.println("score=" + score);
     System.out.println("steps=" + game.getSteps());
