@@ -71,7 +71,7 @@ public class EscapeRoom
       }
 
       // Example usage of px and py to avoid "never read" error
-      System.out.println("Player position: (" + px + ", " + py + ")");
+      System.out.println("Player Position: (" + px + ", " + py + ")");
 
       /* uncomment when user quits */
       // play = false;
@@ -79,8 +79,8 @@ public class EscapeRoom
 
     score += game.endGame();
 
-    System.out.println("score=" + score);
-    System.out.println("steps=" + game.getSteps());
+    System.out.println("Score=" + score);
+    System.out.println("Steps=" + game.getSteps());
     System.out.println("test");
   }
 }
