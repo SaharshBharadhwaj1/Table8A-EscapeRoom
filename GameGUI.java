@@ -46,6 +46,7 @@ public class GameGUI extends JComponent implements KeyListener {
   private Rectangle[] prizes;
   private int totalTraps;
   private Rectangle[] traps;
+  public Image trapImage;
 
   private int prizeVal = 10;
   private int trapVal = 5;
@@ -55,8 +56,9 @@ public class GameGUI extends JComponent implements KeyListener {
 
   private int totalScore = 0;
   private boolean jumpMode = false;
-
   private JFrame frame;
+  // game frame
+  private final JFrame frame;
 
   /**
    * Constructor for the GameGUI class.
@@ -78,6 +80,12 @@ public class GameGUI extends JComponent implements KeyListener {
     } catch (java.io.IOException | NullPointerException e) {
       System.err.println("Could not open file player.png");
     }
+    try {
+      trapImage = ImageIO.read(new File("trap.png"));
+    }  catch (java.io.IOException | NullPointerException e) {
+      System.err.println("Could not open file trap.png");
+      }
+  
     frame = new JFrame();
     frame.setTitle("EscapeRoom");
     frame.setSize(BOARD_WIDTH, BOARD_HEIGHT + 50);
@@ -89,9 +97,15 @@ public class GameGUI extends JComponent implements KeyListener {
     frame.add(this, java.awt.BorderLayout.CENTER);
 
     javax.swing.JPanel controlPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
     JButton finishButton = new JButton("Finish");
     finishButton.addActionListener(e -> checkFinish());
     controlPanel.add(finishButton);
+
+    JButton quitButton = new JButton("Press Q to Quit");
+    quitButton.addActionListener(e -> System.exit(0));
+    controlPanel.add(quitButton);
+
     frame.add(controlPanel, java.awt.BorderLayout.SOUTH);
 
     frame.setVisible(true);
@@ -124,6 +138,7 @@ public class GameGUI extends JComponent implements KeyListener {
     walls = new Rectangle[totalWalls];
     createWalls();
   }
+
 
   public int movePlayer(int incrx, int incry) {
     int newX = x + incrx;
@@ -197,6 +212,33 @@ public class GameGUI extends JComponent implements KeyListener {
       } else if ((incry < 0) && (y >= startY) && (startY >= midY) && (x >= startX) && (x <= endX)) {
         System.out.println("CAN'T JUMP OVER WALL!");
         return -hitWallVal;
+
+    
+  /**
+   * Increment/decrement the player location by the amount designated.
+   * This method checks for bumping into walls and going off the grid,
+   * both of which result in a penalty.
+   * <P>
+   * precondition: amount to move is not larger than the board, otherwise player may appear to disappear
+   * postcondition: increases number of steps even if the player did not actually move (e.g. bumping into a wall)
+   * <P>
+   * @param incrx amount to move player in x direction
+   * @param incry amount to move player in y direction
+   * @return penalty score for hitting a wall or potentially going off the grid, 0 otherwise
+   */
+  public int movePlayer(int incrx, int incry)
+  {
+      int newX = x + incrx;
+      int newY = y + incry;
+      
+      // increment regardless of whether player really moves
+      playerSteps++;
+
+      // check if off grid horizontally and vertically
+      if ( (newX < 0 || newX > BOARD_WIDTH-SPACE_SIZE) || (newY < 0 || newY > BOARD_HEIGHT-SPACE_SIZE) )
+      {
+        System.out.println ("OFF THE GRID!");
+        return -offGridVal;
       }
 
       if ((incrx > 0) && (midX <= startX) && (startX <= newX) && (y >= startY) && (y <= endY)) {
@@ -275,8 +317,14 @@ public class GameGUI extends JComponent implements KeyListener {
         repaint();
         return prizeVal;
       }
+   
     }
+
     return 0;
+
+ 
+    return -prizeVal;  
+
   }
 
   public int getSteps() {
@@ -454,6 +502,7 @@ public class GameGUI extends JComponent implements KeyListener {
   @Override
   public void keyPressed(KeyEvent e) {
     int key = e.getKeyCode();
+
     int score = 0;
 
     if (key == KeyEvent.VK_SPACE) {
@@ -511,6 +560,19 @@ public class GameGUI extends JComponent implements KeyListener {
       System.out.println("Score change: " + score + " | Total: " + totalScore);
       repaint();
     }
+
+      switch (key) {
+          case KeyEvent.VK_W -> movePlayer(0, -SPACE_SIZE);
+          case KeyEvent.VK_A -> movePlayer(-SPACE_SIZE, 0);
+          case KeyEvent.VK_S -> movePlayer(0, SPACE_SIZE);
+          case KeyEvent.VK_D -> movePlayer(SPACE_SIZE, 0);
+          case KeyEvent.VK_Q -> System.exit(0);
+          case KeyEvent.VK_P -> pickupPrize();
+         // case KeyEvent.VK_SPACE -> jump();
+          default -> {
+          }
+      }
+
   }
 
   @Override
@@ -518,4 +580,21 @@ public class GameGUI extends JComponent implements KeyListener {
 
   @Override
   public void keyTyped(KeyEvent e) {}
+
+  public boolean hasActiveTrap(int x, int y) {
+    for (Rectangle trap : traps) {
+        if (trap.getWidth() > 0 && trap.getHeight() > 0) { // not sprung
+            if (trap.contains(x, y)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+public void printTraps() {
+    for (Rectangle trap : traps) {
+        System.out.println("Trap at: (" + (int)trap.getX() + ", " + (int)trap.getY() + ")");
+    }
+}
 }
