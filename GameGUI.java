@@ -317,7 +317,7 @@ public class GameGUI extends JComponent implements KeyListener
    * <P>
    * @param p number of prizes to create
    */
-  public void setPrizes(int p) 
+  public void setPrizes(int p)
   {
     totalPrizes = p;
   }
@@ -329,11 +329,11 @@ public class GameGUI extends JComponent implements KeyListener
    * <P>
    * @param t number of traps to create
    */
-  public void setTraps(int t) 
+  public void setTraps(int t)
   {
     totalTraps = t;
   }
-  
+
   /**
    * Set the designated number of walls in the game. This can be used to customize the gameboard configuration.
    * <P>
