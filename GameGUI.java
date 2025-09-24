@@ -13,14 +13,16 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+
 /**
  * A Game board on which to place and move players.
- * 
+ *
  * @author PLTW
  * @version 1.0
  */
 public class GameGUI extends JComponent implements KeyListener {
   static final long serialVersionUID = 141L;
+
 
   private static final int BOARD_WIDTH = 510;
   private static final int BOARD_HEIGHT = 360;
@@ -30,14 +32,18 @@ public class GameGUI extends JComponent implements KeyListener {
   private static final int START_LOC_X = 15;
   private static final int START_LOC_Y = 15;
 
+
   int x = START_LOC_X;
   int y = START_LOC_Y;
 
+
   private Image bgImage;
+
 
   private Image player;
   private final Point playerLoc = new Point(START_LOC_X, START_LOC_Y);
   private int playerSteps;
+
 
   private int totalWalls;
   private Rectangle[] walls;
@@ -47,16 +53,20 @@ public class GameGUI extends JComponent implements KeyListener {
   private int totalTraps;
   private Rectangle[] traps;
 
+
   private int prizeVal = 10;
   private int trapVal = 5;
   private int endVal = 10;
   private int offGridVal = 5;
   private int hitWallVal = 5;
 
+
   private int totalScore = 0;
   private boolean jumpMode = false;
 
+
   private JFrame frame;
+
 
   /**
    * Constructor for the GameGUI class.
@@ -84,15 +94,19 @@ public class GameGUI extends JComponent implements KeyListener {
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setResizable(false);
 
+
     frame.setLayout(new java.awt.BorderLayout());
 
+
     frame.add(this, java.awt.BorderLayout.CENTER);
+
 
     javax.swing.JPanel controlPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
     JButton finishButton = new JButton("Finish");
     finishButton.addActionListener(e -> checkFinish());
     controlPanel.add(finishButton);
     frame.add(controlPanel, java.awt.BorderLayout.SOUTH);
+
 
     frame.setVisible(true);
     totalWalls = 20;
@@ -103,12 +117,14 @@ public class GameGUI extends JComponent implements KeyListener {
     requestFocusInWindow();
   }
 
+
   /**
    * Call this method after constructing GameGUI to finish GUI initialization.
    */
   public void initializeGUI() {
     frame.add(this);
   }
+
 
   /**
    * After a GameGUI object is created, this method adds the walls, prizes, and traps to the gameboard.
@@ -118,29 +134,36 @@ public class GameGUI extends JComponent implements KeyListener {
     traps = new Rectangle[totalTraps];
     createTraps();
 
+
     prizes = new Rectangle[totalPrizes];
     createPrizes();
+
 
     walls = new Rectangle[totalWalls];
     createWalls();
   }
 
+
   public int movePlayer(int incrx, int incry) {
     int newX = x + incrx;
     int newY = y + incry;
 
+
     playerSteps++;
+
 
     if ((newX < 0 || newX > BOARD_WIDTH - SPACE_SIZE) || (newY < 0 || newY > BOARD_HEIGHT - SPACE_SIZE)) {
       System.out.println("OFF THE GRID!");
       return -offGridVal;
     }
 
+
     for (Rectangle r : walls) {
       int startX = (int) r.getX();
       int endX = (int) r.getX() + (int) r.getWidth();
       int startY = (int) r.getY();
       int endY = (int) r.getY() + (int) r.getHeight();
+
 
       if ((incrx > 0) && (x <= startX) && (startX <= newX) && (y >= startY) && (y <= endY)) {
         System.out.println("A WALL IS IN THE WAY");
@@ -157,12 +180,14 @@ public class GameGUI extends JComponent implements KeyListener {
       }
     }
 
+
     x += incrx;
     y += incry;
     playerLoc.setLocation(x, y);
     repaint();
     return 0;
   }
+
 
   public int jumpPlayer(int incrx, int incry) {
     int jumpX = 2 * incrx;
@@ -172,18 +197,22 @@ public class GameGUI extends JComponent implements KeyListener {
     int newX = x + jumpX;
     int newY = y + jumpY;
 
+
     playerSteps++;
+
 
     if ((newX < 0 || newX > BOARD_WIDTH - SPACE_SIZE) || (newY < 0 || newY > BOARD_HEIGHT - SPACE_SIZE)) {
       System.out.println("CAN'T JUMP OFF THE GRID!");
       return -offGridVal;
     }
 
+
     for (Rectangle r : walls) {
       int startX = (int) r.getX();
       int endX = (int) r.getX() + (int) r.getWidth();
       int startY = (int) r.getY();
       int endY = (int) r.getY() + (int) r.getHeight();
+
 
       if ((incrx > 0) && (x <= startX) && (startX <= midX) && (y >= startY) && (y <= endY)) {
         System.out.println("CAN'T JUMP OVER WALL!");
@@ -198,6 +227,7 @@ public class GameGUI extends JComponent implements KeyListener {
         System.out.println("CAN'T JUMP OVER WALL!");
         return -hitWallVal;
       }
+
 
       if ((incrx > 0) && (midX <= startX) && (startX <= newX) && (y >= startY) && (y <= endY)) {
         System.out.println("CAN'T JUMP OVER WALL!");
@@ -214,6 +244,7 @@ public class GameGUI extends JComponent implements KeyListener {
       }
     }
 
+
     x += jumpX;
     y += jumpY;
     playerLoc.setLocation(x, y);
@@ -221,9 +252,11 @@ public class GameGUI extends JComponent implements KeyListener {
     return 0;
   }
 
+
   public boolean isTrap(int newx, int newy) {
     double px = playerLoc.getX() + newx;
     double py = playerLoc.getY() + newy;
+
 
     for (Rectangle r : traps) {
       if (r.getWidth() > 0) {
@@ -235,9 +268,11 @@ public class GameGUI extends JComponent implements KeyListener {
     return false;
   }
 
+
   public int landOnTrap() {
     double px = playerLoc.getX();
     double py = playerLoc.getY();
+
 
     for (Rectangle r : traps) {
       if (r.getWidth() > 0 && r.contains(px, py)) {
@@ -248,9 +283,11 @@ public class GameGUI extends JComponent implements KeyListener {
     return 0;
   }
 
+
   public int unspringTrap() {
     double px = playerLoc.getX();
     double py = playerLoc.getY();
+
 
     for (Rectangle r : traps) {
       if (r.getWidth() > 0 && r.contains(px, py)) {
@@ -264,9 +301,11 @@ public class GameGUI extends JComponent implements KeyListener {
     return 0;
   }
 
+
   public int pickupPrize() {
     double px = playerLoc.getX();
     double py = playerLoc.getY();
+
 
     for (Rectangle p : prizes) {
       if (p.getWidth() > 0 && p.contains(px, py)) {
@@ -279,29 +318,36 @@ public class GameGUI extends JComponent implements KeyListener {
     return 0;
   }
 
+
   public int getSteps() {
     return playerSteps;
   }
+
 
   public void setPrizes(int p) {
     totalPrizes = p;
   }
 
+
   public void setTraps(int t) {
     totalTraps = t;
   }
+
 
   public void setWalls(int w) {
     totalWalls = w;
   }
 
+
   public int replay() {
     int win = playerAtEnd();
+
 
     for (Rectangle p : prizes)
       p.setSize(SPACE_SIZE / 3, SPACE_SIZE / 3);
     for (Rectangle t : traps)
       t.setSize(SPACE_SIZE / 3, SPACE_SIZE / 3);
+
 
     x = START_LOC_X;
     y = START_LOC_Y;
@@ -312,6 +358,7 @@ public class GameGUI extends JComponent implements KeyListener {
     return win;
   }
 
+
   public int endGame() {
     int win = playerAtEnd();
     setVisible(false);
@@ -319,10 +366,11 @@ public class GameGUI extends JComponent implements KeyListener {
     return win;
   }
 
+
   public void checkFinish() {
     int gridX = x / SPACE_SIZE;
     int gridY = y / SPACE_SIZE;
-    
+   
     if (gridX == (GRID_W - 1) && gridY == (GRID_H - 1)) {
       int finalScore = totalScore + endVal;
       showFinishScreen(finalScore);
@@ -330,60 +378,64 @@ public class GameGUI extends JComponent implements KeyListener {
       System.out.println("Must be in the bottom right corner to finish!");
     }
   }
-  
+ 
   private void showFinishScreen(int finalScore) {
     frame.getContentPane().removeAll();
-    
+   
     javax.swing.JPanel finishPanel = new javax.swing.JPanel();
     finishPanel.setLayout(new java.awt.BorderLayout());
     finishPanel.setBackground(Color.BLACK);
-    
+   
     javax.swing.JLabel titleLabel = new javax.swing.JLabel("YOU WIN!", javax.swing.SwingConstants.CENTER);
     titleLabel.setForeground(Color.GREEN);
     titleLabel.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 36));
-    
+   
     javax.swing.JLabel scoreLabel = new javax.swing.JLabel("Final Score: " + finalScore, javax.swing.SwingConstants.CENTER);
     scoreLabel.setForeground(Color.BLUE);
     scoreLabel.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
-    
+   
     javax.swing.JLabel stepsLabel = new javax.swing.JLabel("Steps Taken: " + playerSteps, javax.swing.SwingConstants.CENTER);
     stepsLabel.setForeground(Color.CYAN);
     stepsLabel.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 18));
-    
+   
     javax.swing.JPanel centerPanel = new javax.swing.JPanel();
     centerPanel.setLayout(new java.awt.GridLayout(3, 1, 0, 20));
     centerPanel.setBackground(Color.BLACK);
     centerPanel.add(titleLabel);
     centerPanel.add(scoreLabel);
     centerPanel.add(stepsLabel);
-    
+   
     javax.swing.JButton exitButton = new javax.swing.JButton("Exit Game");
     exitButton.addActionListener(e -> System.exit(0));
     exitButton.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 16));
-    
+   
     javax.swing.JPanel buttonPanel = new javax.swing.JPanel();
     buttonPanel.setBackground(Color.BLACK);
     buttonPanel.add(exitButton);
-    
+   
     finishPanel.add(centerPanel, java.awt.BorderLayout.CENTER);
     finishPanel.add(buttonPanel, java.awt.BorderLayout.SOUTH);
-    
+   
     frame.add(finishPanel);
     frame.revalidate();
     frame.repaint();
   }
+
 
   @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
     Graphics2D g2 = (Graphics2D) g;
 
+
     g.drawImage(bgImage, 0, 0, null);
+
 
     for (Rectangle t : traps) {
       g2.setPaint(Color.WHITE);
       g2.fill(t);
     }
+
 
     for (Rectangle p : prizes) {
       if (p.getWidth() > 0) {
@@ -393,13 +445,16 @@ public class GameGUI extends JComponent implements KeyListener {
       }
     }
 
+
     for (Rectangle r : walls) {
       g2.setPaint(Color.BLACK);
       g2.fill(r);
     }
 
+
     g.drawImage(player, x, y, 40, 40, null);
     playerLoc.setLocation(x, y);
+
 
     g.setColor(Color.BLACK);
     g.drawString("Score: " + totalScore, 10, 15);
@@ -407,6 +462,7 @@ public class GameGUI extends JComponent implements KeyListener {
       g.drawString("JUMP MODE ON - Select Direction", 10, 30);
     }
   }
+
 
   private void createPrizes() {
     int s = SPACE_SIZE;
@@ -419,6 +475,7 @@ public class GameGUI extends JComponent implements KeyListener {
     }
   }
 
+
   private void createTraps() {
     int s = SPACE_SIZE;
     Random rand = new Random();
@@ -429,6 +486,7 @@ public class GameGUI extends JComponent implements KeyListener {
       traps[numTraps] = r;
     }
   }
+
 
   private void createWalls() {
     int s = SPACE_SIZE;
@@ -451,6 +509,7 @@ public class GameGUI extends JComponent implements KeyListener {
     }
   }
 
+
   private int playerAtEnd() {
     int score;
     double px = playerLoc.getX();
@@ -464,10 +523,12 @@ public class GameGUI extends JComponent implements KeyListener {
     return score;
   }
 
+
   @Override
   public void keyPressed(KeyEvent e) {
     int key = e.getKeyCode();
     int score = 0;
+
 
     if (key == KeyEvent.VK_SPACE) {
       jumpMode = !jumpMode;
@@ -475,6 +536,7 @@ public class GameGUI extends JComponent implements KeyListener {
       repaint();
       return;
     }
+
 
     if (key == KeyEvent.VK_E) {
       score += unspringTrap();
@@ -485,6 +547,7 @@ public class GameGUI extends JComponent implements KeyListener {
       }
       return;
     }
+
 
     if (jumpMode) {
       if (key == KeyEvent.VK_W) {
@@ -516,8 +579,10 @@ public class GameGUI extends JComponent implements KeyListener {
       }
     }
 
+
     score += landOnTrap();
     score += pickupPrize();
+
 
     if (score != 0) {
       totalScore += score;
@@ -526,9 +591,12 @@ public class GameGUI extends JComponent implements KeyListener {
     }
   }
 
+
   @Override
   public void keyReleased(KeyEvent e) {}
+
 
   @Override
   public void keyTyped(KeyEvent e) {}
 }
+
