@@ -5,6 +5,7 @@
 * 10/10/2019
 * Copyright(c) 2019 PLTW to present. All rights reserved
 */
+import java.util.Scanner;
 
 /**
  * Create an escape room game where the player must navigate
@@ -44,9 +45,10 @@ public class EscapeRoom
     
     int score = 0;
 
+    Scanner in = new Scanner(System.in);
     String[] validCommands = { "right", "left", "up", "down", "r", "l", "u", "d",
     "jump", "jr", "jumpleft", "jl", "jumpup", "ju", "jumpdown", "jd",
-    "pickup", "p", "springtrap", "st", "quit", "q", "replay", "help", "?", "findtrap"};
+    "pickup", "p", "quit", "q", "replay", "help", "?"};
   
     // set up game
     boolean play = true;
@@ -57,108 +59,17 @@ public class EscapeRoom
       System.out.print("Enter command:");
       String input = UserInput.getValidInput(validCommands);
 
-      /* process user commands*/
-      switch (input) {
-        case "right", "r", "d"  -> {
-            if (game.hasActiveTrap(game.x, game.y)) {
-                System.out.println("You got caught! Spring the Trap and move on. -10 points.");
-                score -= 10;
-            } else {
-                game.movePlayer(m, 0); 
-            }
-        }
-        case "left", "l", "a" -> {
-            if (game.hasActiveTrap(game.x, game.y)) {
-                System.out.println("You got caught! Spring the Trap and move on. -10 points.");
-                score -= 10;
-            } else {
-                game.movePlayer(-m, 0); 
-            }
-        }
-        case "up", "u", "w" -> {
-            if (game.hasActiveTrap(game.x, game.y)) {
-                System.out.println("You got caught! Spring the Trap and move on. -10 points.");
-                score -= 10;
-            } else {
-                game.movePlayer(0, -m); 
-            }
-        }
-        case "down", "s" -> {
-            if (game.hasActiveTrap(game.x, game.y)) {
-                System.out.println("You got caught! Spring the Trap and move on. -10 points.");
-                score -= 10;
-            } else {
-                game.movePlayer(0, m); 
-            }
-        }
-        case "springtrap", "st" -> {
-          int trapScore = game.springTrap(px, py);
-          if (trapScore > 0) {
-            System.out.println("TRAP IS SPRUNG! Score: +" + trapScore);
-          } else {
-            System.out.println("THERE IS NO TRAP HERE TO SPRING. Penalty: " + trapScore);
-          }
-          score += trapScore;
-        }
-        case "help", "?" -> {
-          System.out.println("\n=== COMMANDS ===");
-          System.out.println("right, r, d   : Move right");
-          System.out.println("left, l, a    : Move left");
-          System.out.println("up, u, w      : Move up");
-          System.out.println("down, s       : Move down");
-          System.out.println("jump, jr      : Jump right");
-          System.out.println("jumpleft, jl  : Jump left");
-          System.out.println("jumpup, ju    : Jump up");
-          System.out.println("jumpdown, jd  : Jump down");
-          System.out.println("pickup, p     : Pick up a prize if present");
-          System.out.println("springtrap, st: Spring a trap if present (for points)");
-          System.out.println("findtrap      : Reveal all trap locations (cheat)");
-          System.out.println("replay        : Reset the board and play again");
-          System.out.println("help, ?       : Show this help menu");
-          System.out.println("quit, q       : Quit the game");
-          System.out.println("\nType one of these commands and press Enter to play.");
-        }
-        case "quit", "q" -> play = false;
-        case "findtrap" -> {
-          System.out.println("Trap locations:");
-          game.printTraps();
-        }
-        // Add other command processing as needed
-        default -> {
-          // Handle other commands or invalid input
-        }
-      }
-
-      // Example usage of px and py to avoid "never read" error
-      System.out.println("Player Position: (" + px + ", " + py + ")");
-
+	    /* process user commands*/
+    
       /* uncomment when user quits */
       // play = false;
-      // Check if player is on a coin and collect it
-      int prize = game.pickupPrize();
-      if (prize > 0) {
-        score += prize;
-        System.out.println("You collected a coin! Score: " + score);
-      }
-
-      System.out.println("Player position: (" + game.x + ", " + game.y + ")");
-      System.out.println("Score: " + score); // Always show current score
     }
 
     score += game.endGame();
 
-    System.out.println("Score=" + score);
-    System.out.println("Steps=" + game.getSteps());
-    System.out.println("test");
-    System.out.println("Player position: (" + game.x + ", " + game.y + ")");
     System.out.println("score=" + score);
     System.out.println("steps=" + game.getSteps());
-
-
-    
   }
-  
-
 }
 
-
+        
